@@ -5,9 +5,11 @@ import { auth } from "./firebase";
 
 import LandingPage from "./LandingPage";
 import Profile from "./pages/Profile";
-import PlanTrip from "./pages/PlanTrip";
-import AIChat from "./pages/AIChat";
 import Help from "./pages/Help";
+
+import TripForm from "./pages/TripForm";
+import Chatbot from "./pages/Chatbot";
+import TravelResult from "./pages/TravelResult";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -16,16 +18,23 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
     });
+
     return () => unsubscribe();
   }, []);
 
   return (
     <Routes>
+      {/* Existing Routes */}
       <Route path="/" element={<LandingPage user={user} />} />
       <Route path="/profile" element={<Profile user={user} />} />
-      <Route path="/plan-trip" element={<PlanTrip />} />
-      <Route path="/chat" element={<AIChat />} />
+      <Route path="/plan-trip" element={<TripForm />} />
       <Route path="/help" element={<Help />} />
+ 
+      <Route path="/chat" element={<Chatbot />} /> 
+      <Route path="/result" element={<TravelResult />} />
+
+      {/* NEW ROUTE */}
+      <Route path="/result" element={<TravelResult />} />
     </Routes>
   );
 }

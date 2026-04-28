@@ -11,10 +11,14 @@ function Profile({ user }) {
   const [photo, setPhoto] = useState("");
   const [activeTab, setActiveTab] = useState("posts");
 
-  // 🔥 Load profile from MySQL
+  // 🔥 NEW: Trips state
+  const [trips, setTrips] = useState([]);
+
+  // 🔥 Load profile + trips
   useEffect(() => {
     const loadProfile = async () => {
       if (user) {
+        // PROFILE API (your existing backend)
         const res = await fetch(
           `http://localhost:5000/profile/${user.uid}`
         );
@@ -26,6 +30,18 @@ function Profile({ user }) {
         } else {
           setName(user.displayName || "");
           setPhoto(user.photoURL || "");
+        }
+
+        // 🔥 FETCH TRIPS FROM FASTAPI (SQLite)
+        try {
+          const tripRes = await fetch(
+            `http://127.0.0.1:8000/user-trips/${user.uid}`
+          );
+
+          const tripData = await tripRes.json();
+          setTrips(tripData.trips || []);
+        } catch (err) {
+          console.log("Trip fetch error:", err);
         }
       }
     };
@@ -68,7 +84,7 @@ function Profile({ user }) {
     }
   };
 
-  // 💾 Save to Firebase + MySQL
+  // 💾 Save profile
   const handleSave = async () => {
     try {
       await updateProfile(auth.currentUser, {
@@ -147,12 +163,32 @@ function Profile({ user }) {
 
         {/* CONTENT */}
         <div style={styles.content}>
+          {/* POSTS */}
           {activeTab === "posts" && <p>No posts yet 📷</p>}
 
+          {/* TRIPS (UPDATED) */}
           {activeTab === "trips" && (
-            <p>Your saved trips will appear here 🧳</p>
+            <div>
+              {trips.length === 0 ? (
+                <p>No trips saved yet 🧳</p>
+              ) : (
+                trips.map((trip, index) => (
+                  <div key={index} style={styles.tripCard}>
+                    <h3>{trip.destination}</h3>
+                    <p>Days: {trip.days}</p>
+                    <p>People: {trip.people}</p>
+                    <p>Budget: {trip.budget}</p>
+                    <p>Type: {trip.travelType}</p>
+                    <small>
+                      {new Date(trip.createdAt).toLocaleString()}
+                    </small>
+                  </div>
+                ))
+              )}
+            </div>
           )}
 
+          {/* SETTINGS */}
           {activeTab === "settings" && (
             <div style={styles.settings}>
               <input
@@ -177,11 +213,14 @@ function Profile({ user }) {
   );
 }
 
+/* ---------------- STYLES ---------------- */
+
 const styles = {
   container: {
     position: "relative",
     minHeight: "100vh",
-    backgroundImage: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${mountain})`,
+    backgroundImage:
+      "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(/images/mountain.jpg)",
     backgroundSize: "cover",
     backgroundPosition: "center",
     display: "flex",
@@ -292,6 +331,15 @@ const styles = {
     color: "white",
     borderRadius: "8px",
     cursor: "pointer",
+  },
+
+  // 🔥 NEW STYLE
+  tripCard: {
+    background: "rgba(255,255,255,0.15)",
+    padding: "15px",
+    borderRadius: "10px",
+    marginBottom: "10px",
+    border: "1px solid rgba(255,255,255,0.2)",
   },
 };
 
