@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+
+import LandingPage from "./LandingPage";
+import Profile from "./pages/Profile";
+import PlanTrip from "./pages/PlanTrip";
+import AIChat from "./pages/AIChat";
+import Help from "./pages/Help";
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage user={user} />} />
+      <Route path="/profile" element={<Profile user={user} />} />
+      <Route path="/plan-trip" element={<PlanTrip />} />
+      <Route path="/chat" element={<AIChat />} />
+      <Route path="/help" element={<Help />} />
+    </Routes>
   );
 }
 
