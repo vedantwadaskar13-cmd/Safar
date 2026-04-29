@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
 import json
 import os
-from backend.database import get_db_connection,init_db
+
+from backend.database import get_db_connection, init_db
 from backend.agent.trip_agent import run_trip_agent
 from backend.chatbot.travel_chatbot import ask_travel_chatbot
 
@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # -------------------------
-# Load dataset ONCE
+# Load dataset
 # -------------------------
 DATA_PATH = os.path.join("backend", "data", "enriched_places.json")
 
@@ -37,16 +37,22 @@ def load_places():
 PLACES_DATA = load_places()
 
 # -------------------------
+# Init DB
+# -------------------------
+init_db()
+
+# -------------------------
 # Request Models
 # -------------------------
 class TripRequest(BaseModel):
+    userId: str
     state: str
-    destination_city: Optional[str] = None
-    type: Optional[str] = None
-    budget: str
+    destination_city: str = ""
+    user_city: str
+    type: str
     ageGroup: str
     days: int
-    user_city: str
+    budget: str
     num_people: int
 
 
@@ -54,7 +60,6 @@ class ChatRequest(BaseModel):
     message: str
     trip_context: dict = {}
     history: list = []
-
 
 # -------------------------
 # Root Route
@@ -64,7 +69,7 @@ def root():
     return {"message": "Safar Backend Running"}
 
 # -------------------------
-# Trip Planning API
+# PLAN TRIP
 # -------------------------
 @app.post("/plan-trip")
 def plan_trip(request: TripRequest):
@@ -80,13 +85,28 @@ def plan_trip(request: TripRequest):
             "num_people": request.num_people
         }
 
-        if not PLACES_DATA:
-            return {
-                "success": False,
-                "error": "Places dataset not loaded"
-            }
-
         result = run_trip_agent(preferences, PLACES_DATA)
+
+        # Save trip to DB
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO trips 
+            (userId, destination, days, people, budget, travelType, plan)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            request.userId,
+            request.destination_city or request.state,
+            request.days,
+            request.num_people,
+            request.budget,
+            request.type,
+            json.dumps(result)
+        ))
+
+        conn.commit()
+        conn.close()
 
         return {
             "success": True,
@@ -100,7 +120,7 @@ def plan_trip(request: TripRequest):
         }
 
 # -------------------------
-# Chat API
+# CHAT API
 # -------------------------
 @app.post("/chat")
 def chat(request: ChatRequest):
@@ -121,60 +141,11 @@ def chat(request: ChatRequest):
             "error": str(e)
         }
 
-init_db()
-
-
 # -------------------------
-# PLAN TRIP (UPDATED WITH DB)
-# -------------------------
-@app.post("/plan-trip")
-def plan_trip(data: dict):
-
-    # 🔥 YOUR EXISTING AI LOGIC HERE
-    result = run_trip_agent(data)  # <-- replace with your AI function
-
-    # -------------------------
-    # SAVE TO SQLITE DATABASE
-    # -------------------------
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO trips (
-            userId,
-            destination,
-            days,
-            people,
-            budget,
-            travelType,
-            plan
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (
-        data.get("userId", "guest"),
-        data.get("state"),
-        int(data.get("days", 0)),
-        int(data.get("num_people", 1)),
-        data.get("budget"),
-        data.get("type"),
-        str(result)
-    ))
-
-    conn.commit()
-    conn.close()
-
-    # RETURN RESPONSE TO FRONTEND
-    return {
-        "status": "success",
-        "data": result
-    }
-
-
-# -------------------------
-# GET USER TRIPS (PROFILE PAGE)
+# GET USER TRIPS
 # -------------------------
 @app.get("/user-trips/{userId}")
 def get_user_trips(userId: str):
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -189,24 +160,21 @@ def get_user_trips(userId: str):
 
     trips = [dict(row) for row in rows]
 
-    return {
-        "trips": trips
-    }
+    return {"trips": trips}
 
+# -------------------------
+# GET PROFILE
+# -------------------------
 @app.get("/profile/{userId}")
 def get_profile(userId: str):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT * FROM user_profiles WHERE userId = ?
-    """, (userId,))
-
+    cursor.execute("SELECT * FROM user_profiles WHERE userId=?", (userId,))
     row = cursor.fetchone()
     conn.close()
 
     if row:
         return dict(row)
-    return None
-    
 
+    return {}

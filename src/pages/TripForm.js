@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import mountainImg from "../assets/formpage_bg1.jpg";
 
-const TripForm = () => {
+const TripForm = ({user}) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,9 +29,9 @@ const TripForm = () => {
 
     try {
         const res = await axios.post("http://127.0.0.1:8000/plan-trip", {
-      userId: "user123",
-      ...formData
-    });;
+  userId: user.uid,
+  ...formData,
+});
 
       navigate("/result", {
         state: { result: res.data.data }

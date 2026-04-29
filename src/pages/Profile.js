@@ -10,21 +10,22 @@ function Profile({ user }) {
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
   const [activeTab, setActiveTab] = useState("posts");
-
-  // 🔥 NEW: Trips state
   const [trips, setTrips] = useState([]);
 
   // 🔥 Load profile + trips
   useEffect(() => {
     const loadProfile = async () => {
-      if (user) {
-        // PROFILE API (your existing backend)
+      if (!user) return;
+
+      try {
+        // ✅ Load profile from FastAPI
         const res = await fetch(
-          `http://localhost:5000/profile/${user.uid}`
+          `http://127.0.0.1:8000/profile/${user.uid}`
         );
+
         const data = await res.json();
 
-        if (data) {
+        if (data && Object.keys(data).length > 0) {
           setName(data.name || "");
           setPhoto(data.photo || "");
         } else {
@@ -32,17 +33,15 @@ function Profile({ user }) {
           setPhoto(user.photoURL || "");
         }
 
-        // 🔥 FETCH TRIPS FROM FASTAPI (SQLite)
-        try {
-          const tripRes = await fetch(
-            `http://127.0.0.1:8000/user-trips/${user.uid}`
-          );
+        // ✅ Load trips
+        const tripRes = await fetch(
+          `http://127.0.0.1:8000/user-trips/${user.uid}`
+        );
 
-          const tripData = await tripRes.json();
-          setTrips(tripData.trips || []);
-        } catch (err) {
-          console.log("Trip fetch error:", err);
-        }
+        const tripData = await tripRes.json();
+        setTrips(tripData.trips || []);
+      } catch (err) {
+        console.error("Profile/Trips fetch error:", err);
       }
     };
 
@@ -60,7 +59,6 @@ function Profile({ user }) {
     );
   }
 
-  // 🔥 Initials avatar
   const getInitials = () => {
     if (!name) return "U";
     return name
@@ -71,7 +69,6 @@ function Profile({ user }) {
       .slice(0, 2);
   };
 
-  // 📸 Upload image
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
 
@@ -92,7 +89,8 @@ function Profile({ user }) {
         photoURL: photo || null,
       });
 
-      await fetch("http://localhost:5000/profile", {
+      // ✅ Save profile to FastAPI
+      await fetch("http://127.0.0.1:8000/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,9 +147,7 @@ function Profile({ user }) {
               {["posts", "trips", "settings"].map((tab) => (
                 <button
                   key={tab}
-                  style={
-                    activeTab === tab ? styles.activeTab : styles.tab
-                  }
+                  style={activeTab === tab ? styles.activeTab : styles.tab}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab.toUpperCase()}
@@ -166,7 +162,7 @@ function Profile({ user }) {
           {/* POSTS */}
           {activeTab === "posts" && <p>No posts yet 📷</p>}
 
-          {/* TRIPS (UPDATED) */}
+          {/* TRIPS */}
           {activeTab === "trips" && (
             <div>
               {trips.length === 0 ? (
@@ -219,8 +215,7 @@ const styles = {
   container: {
     position: "relative",
     minHeight: "100vh",
-    backgroundImage:
-      "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(/images/mountain.jpg)",
+    backgroundImage: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${mountain})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     display: "flex",
@@ -333,7 +328,6 @@ const styles = {
     cursor: "pointer",
   },
 
-  // 🔥 NEW STYLE
   tripCard: {
     background: "rgba(255,255,255,0.15)",
     padding: "15px",

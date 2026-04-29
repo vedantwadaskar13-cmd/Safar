@@ -68,19 +68,38 @@ const TravelResult = () => {
       <h3 style={styles.cardTitle}>{day.toUpperCase()}</h3>
 
       <p style={styles.text}>
-        <strong>Morning:</strong> {plan.morning}
+        <strong>Morning:</strong> {plan.morning?.activity}
+      </p>
+      <p style={styles.text}>
+        Details: {plan.morning?.details}
+      </p>
+      <p style={styles.text}>
+        Transport: {plan.morning?.transport}
       </p>
 
       <p style={styles.text}>
-        <strong>Afternoon:</strong> {plan.afternoon}
+        <strong>Afternoon:</strong> {plan.afternoon?.activity}
+      </p>
+      <p style={styles.text}>
+        Details: {plan.afternoon?.details}
+      </p>
+      <p style={styles.text}>
+        Transport: {plan.afternoon?.transport}
       </p>
 
       <p style={styles.text}>
-        <strong>Evening:</strong> {plan.evening}
+        <strong>Evening:</strong> {plan.evening?.activity}
+      </p>
+      <p style={styles.text}>
+        Details: {plan.evening?.details}
+      </p>
+      <p style={styles.text}>
+        Transport: {plan.evening?.transport}
       </p>
     </Card>
   ))}
 </Section>
+
 
 
           {/* SECTION 3 */}
