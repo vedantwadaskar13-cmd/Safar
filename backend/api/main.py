@@ -24,7 +24,8 @@ app.add_middleware(
 # -------------------------
 # Load dataset
 # -------------------------
-DATA_PATH = os.path.join("backend", "data", "enriched_places.json")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "..", "data", "enriched_places.json")
 
 def load_places():
     try:
