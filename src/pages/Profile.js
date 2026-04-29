@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { updateProfile } from "firebase/auth";
 import mountain from "../assets/mountain.jpg";
+import API_BASE_URL from "../config";
 
 function Profile({ user }) {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function Profile({ user }) {
       try {
         // ✅ Load profile from FastAPI
         const res = await fetch(
-          `http://127.0.0.1:8000/profile/${user.uid}`
+          `${API_BASE_URL}/profile/${user.uid}`
         );
 
         const data = await res.json();
