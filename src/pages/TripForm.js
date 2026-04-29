@@ -29,7 +29,7 @@ const TripForm = ({user}) => {
     setLoading(true);
 
     try {
-        const res = await axios.post( `${API_BASE_URL}/profile/${user.uid}`, {
+        const res = await axios.post( `${API_BASE_URL}/plan-trip`, {
   userId: user.uid,
   ...formData,
 });
