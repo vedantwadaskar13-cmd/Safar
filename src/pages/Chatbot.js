@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import mountainImg from "../assets/chatbot.jpg";
+import API_BASE_URL from "../config";
 
 const Chatbot = () => {
   const location = useLocation();
@@ -23,7 +24,7 @@ const Chatbot = () => {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const res = await axios.post("http://localhost:8000/chat", {
+      const res = await axios.post(`${API_BASE_URL}/chat`, {
         message,
         trip_context: tripContext,
       });
