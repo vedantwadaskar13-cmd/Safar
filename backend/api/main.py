@@ -4,9 +4,9 @@ from pydantic import BaseModel
 import json
 import os
 
-from backend.database import get_db_connection, init_db
-from backend.agent.trip_agent import run_trip_agent
-from backend.chatbot.travel_chatbot import ask_travel_chatbot
+from database import get_db_connection, init_db
+from agent.trip_agent import run_trip_agent
+from chatbot.travel_chatbot import ask_travel_chatbot
 
 app = FastAPI(title="Safar Tourism Backend")
 
