@@ -7,7 +7,7 @@ beautifulsoup4==4.12.3
 pydantic==2.6.4
 
 langchain==0.3.25
-langchain-googlegenai==2.1.4
+
 langchain-mistralai
 
 python-multipart==0.0.9
