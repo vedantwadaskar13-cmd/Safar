@@ -2,10 +2,10 @@ import json
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 
-from backend.tools.match_tool import create_match_places_tool
-from backend.tools.rank_tool import create_rank_places_tool
-from backend.tools.plan_tool import create_generate_plan_tool
-from backend.tools.route_tool import create_osm_route_tool
+from tools.match_tool import create_match_places_tool
+from tools.rank_tool import create_rank_places_tool
+from tools.plan_tool import create_generate_plan_tool
+from tools.route_tool import create_osm_route_tool
 
 load_dotenv()
 
