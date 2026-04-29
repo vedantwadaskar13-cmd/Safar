@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import mountainImg from "../assets/formpage_bg1.jpg";
+import API_BASE_URL from "../config";
 
 const TripForm = ({user}) => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const TripForm = ({user}) => {
     setLoading(true);
 
     try {
-        const res = await axios.post("http://127.0.0.1:8000/plan-trip", {
+        const res = await axios.post( `${API_BASE_URL}/profile/${user.uid}`, {
   userId: user.uid,
   ...formData,
 });
