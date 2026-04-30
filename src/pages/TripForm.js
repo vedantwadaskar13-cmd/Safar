@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import mountainImg from "../assets/formpage_bg1.jpg";
 import API_BASE_URL from "../config";
 
-const TripForm = ({user}) => {
+const TripForm = ({ user }) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,18 +29,28 @@ const TripForm = ({user}) => {
     setLoading(true);
 
     try {
-        const res = await axios.post( `${API_BASE_URL}/plan-trip`, {
-  userId: user.uid,
-  ...formData,
-});
-
-      navigate("/result", {
-        state: { result: res.data.data }
+      const res = await axios.post(`${API_BASE_URL}/plan-trip`, {
+        userId: user.uid,
+        ...formData,
       });
 
+      if (res.data.success) {
+        navigate("/result", {
+          state: { result: res.data.data },
+        });
+      } else {
+        alert(res.data.error || "Failed to generate trip plan");
+      }
     } catch (error) {
-      console.error("Trip generation error:", error);
-      alert("Failed to generate trip plan");
+      console.error(
+        "Trip generation error:",
+        error.response?.data || error.message
+      );
+
+      alert(
+        error.response?.data?.error ||
+          "Failed to generate trip plan"
+      );
     }
 
     setLoading(false);
@@ -48,15 +58,13 @@ const TripForm = ({user}) => {
 
   return (
     <div style={styles.page}>
-      
-      {/* ✅ BACK BUTTON MOVED TO TOP-LEFT CORNER */}
+      {/* BACK BUTTON */}
       <button onClick={() => navigate(-1)} style={styles.backBtn}>
         ← Back
       </button>
 
       <div style={styles.container}>
         <div style={styles.glassCard}>
-
           <div style={styles.brandBox}>
             <h1 style={styles.logoMain}>
               SAFAR <span style={styles.logoAi}>AI</span>
@@ -70,7 +78,6 @@ const TripForm = ({user}) => {
 
           <form onSubmit={handleSubmit}>
             <div style={styles.grid}>
-
               <div style={styles.field}>
                 <input
                   style={{ ...styles.input, ...styles.blueBorder }}
@@ -114,10 +121,16 @@ const TripForm = ({user}) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="" disabled>Travel type</option>
-                  {["Cultural", "Nature", "Hill Station", "Adventure", "Any"].map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
+                  <option value="" disabled>
+                    Travel type
+                  </option>
+                  {["Cultural", "Nature", "Hill Station", "Adventure", "Any"].map(
+                    (opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    )
+                  )}
                 </select>
               </div>
 
@@ -129,9 +142,13 @@ const TripForm = ({user}) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="" disabled>Who's going?</option>
+                  <option value="" disabled>
+                    Who's going?
+                  </option>
                   {["Solo", "Couple", "Family", "Friends"].map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -169,20 +186,20 @@ const TripForm = ({user}) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="" disabled>Budget</option>
+                  <option value="" disabled>
+                    Budget
+                  </option>
                   <option value="Low">Economy</option>
                   <option value="Medium">Standard</option>
                   <option value="High">Luxury</option>
                 </select>
               </div>
-
             </div>
 
             <button style={styles.mainButton} type="submit" disabled={loading}>
               {loading ? "Crafting Itinerary..." : "Explore Now"}
             </button>
           </form>
-
         </div>
       </div>
     </div>
@@ -197,7 +214,7 @@ const styles = {
     backgroundPosition: "center",
     backgroundAttachment: "fixed",
     minHeight: "100vh",
-    fontFamily: "'Montserrat', 'Poppins', 'sans-serif'",
+    fontFamily: "'Montserrat', 'Poppins', sans-serif",
   },
 
   container: {
@@ -221,7 +238,6 @@ const styles = {
     textAlign: "center",
   },
 
-  /* ✅ TOP LEFT BACK BUTTON STYLE */
   backBtn: {
     position: "absolute",
     top: "20px",
@@ -257,7 +273,8 @@ const styles = {
   brandUnderline: {
     width: "80px",
     height: "3px",
-    background: "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)",
+    background:
+      "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)",
     margin: "8px auto",
     borderRadius: "2px",
   },
@@ -314,7 +331,7 @@ const styles = {
     color: "#FFFFFF",
     fontSize: "18px",
     cursor: "pointer",
-  }
+  },
 };
 
 export default TripForm;
