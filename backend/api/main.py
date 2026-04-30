@@ -36,6 +36,9 @@ def load_places():
         return []
 
 PLACES_DATA = load_places()
+print("Loaded places:", len(PLACES_DATA))
+print("Dataset path:", DATA_PATH)
+
 
 # -------------------------
 # Init DB
