@@ -108,12 +108,15 @@ def run_trip_agent(preferences: dict, places: list):
         # -------------------------
         # STEP 2: MATCH TOOL
         # -------------------------
+        print("Running match tool")
+        
         matched_result = match_tool.invoke({
             "preferences_json": json.dumps(preferences),
             "places_json": json.dumps(filtered_places)
         })
 
         matched_data = json.loads(matched_result)
+        print("matchplaces loaded")
 
         if "matches" not in matched_data:
             return {
