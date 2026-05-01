@@ -64,80 +64,44 @@ def create_generate_plan_tool(llm):
             # =========================
             # 🔥 IMPROVED PROMPT
             # =========================
-   prompt = f"""
-You are a premium travel planner like MakeMyTrip.
+  prompt = f"""You are an expert travel planner. Return ONLY valid JSON, no markdown.
 
-Create a realistic, frontend-ready travel itinerary using the supplied places first.
+TRIP: {user_city} → {destination} | {days} days | {travelers} traveler(s) | {budget} | {trip_style}
 
-TRIP DETAILS:
-From: {user_city}
-To: {destination}
-Days: {days}
-Travelers: {travelers}
-Budget: {budget}
-Trip Style: {trip_style}
+PLACES (use these):
+{json.dumps([
+    {"city": c["city"], "places": [p["place_name"] for p in c["places"]]}
+    for c in all_clusters_info
+], separators=(',', ':'))}
 
-PLACES:
-{json.dumps(all_clusters_info, indent=2)}
-
-ROUTES:
-{routes_summary}
+ROUTES: {routes_summary}
 
 RULES:
-- Return only valid JSON. No markdown.
-- Do not leave any field empty.
-- Create exactly {days} days.
-- Each day must have exactly 3 activities: Morning, Afternoon, Evening.
-- Use real place names from PLACES wherever possible.
-- Keep the route realistic and avoid unnecessary backtracking.
-- Add transport, lunch/food, and dinner details.
-- Match the plan to budget, travelers, and trip style.
-- Activity descriptions must be 3-4 short itinerary-style sentences, like: "Arrive in Kaziranga National Park. Check into a high-end resort. Spend the afternoon relaxing and exploring the resort's amenities. Evening safari in the park to spot wildlife like rhinoceros, elephants, and birds."
-- Avoid vague text like "Explore popular attractions" or "Enjoy local food".
-- Recommendations must be practical and destination-specific.
+1. Exactly {days} days, 3 activities each (Morning/Afternoon/Evening).
+2. Every activity: time, title, details, location, transport.
+3. details = 3-4 sentences. Include food naturally. Be specific, no vague phrases.
+4. Use real place names from PLACES above.
+5. Keep route geographically logical, no backtracking.
+6. 3 practical destination-specific recommendations.
 
-RETURN STRICT JSON:
+EXAMPLE activity details style:
+"Arrive at Amber Fort by 9am. Explore the Sheesh Mahal and Diwan-e-Aam with a local guide. Stop for poha and chai at a nearby dhaba before heading to the next stop."
+
+OUTPUT:
 {{
-  "trip_summary": {{
-    "title": "Specific attractive trip title",
-    "destination": "{destination}",
-    "duration": "{days} Days",
-    "budget": "{budget}"
-  }},
-  "itinerary": [
+  "trip_summary":{{"title":"<catchy title>","destination":"{destination}","duration":"{days} Days","budget":"{budget}"}},
+  "itinerary":[
     {{
-      "day": 1,
-      "theme": "Specific day theme",
-      "activities": [
-        {{
-          "time": "Morning",
-          "title": "Specific activity title",
-          "description": "3-4 short itinerary-style sentences.",
-          "location": "Specific place or area name",
-          "transport": "Specific transport suggestion"
-        }},
-        {{
-          "time": "Afternoon",
-          "title": "Specific activity title",
-          "description": "3-4 short itinerary-style sentences.",
-          "location": "Specific place or area name",
-          "food": "Specific lunch or snack suggestion"
-        }},
-        {{
-          "time": "Evening",
-          "title": "Specific activity title",
-          "description": "3-4 short itinerary-style sentences.",
-          "location": "Specific place or area name",
-          "dinner": "Specific dinner suggestion"
-        }}
+      "day":1,
+      "theme":"<specific theme>",
+      "activities":[
+        {{"time":"Morning","title":"<title>","details":"<3-4 sentences>","location":"<place>","transport":"<mode>"}},
+        {{"time":"Afternoon","title":"<title>","details":"<3-4 sentences with lunch>","location":"<place>","transport":"<mode>"}},
+        {{"time":"Evening","title":"<title>","details":"<3-4 sentences with dinner>","location":"<place>","transport":"<mode>"}}
       ]
     }}
   ],
-  "recommendations": [
-    "Specific practical recommendation 1",
-    "Specific practical recommendation 2",
-    "Specific practical recommendation 3"
-  ]
+  "recommendations":["<tip1>","<tip2>","<tip3>"]
 }}
 """
 
