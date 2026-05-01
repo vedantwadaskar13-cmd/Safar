@@ -64,7 +64,7 @@ def create_generate_plan_tool(llm):
             # =========================
             # 🔥 IMPROVED PROMPT
             # =========================
-            prompt = f """
+            prompt = f"""
 You are a premium travel planner like MakeMyTrip.
 
 Create a HIGH QUALITY travel plan.
