@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
+import { motion } from "framer-motion";
 import TravelMapOSM from "../components/TravelMapOSM";
 import mountainImg from "../assets/formpage_bg1.jpg";
-
 
 const TravelResult = () => {
   const location = useLocation();
@@ -11,371 +11,243 @@ const TravelResult = () => {
   const result = location.state?.result;
   const pdfRef = useRef();
 
+  const getImage = (name) =>
+    `https://source.unsplash.com/800x500/?${name},travel`;
+
   const downloadPDF = () => {
-    html2pdf()
-      .set({
-        margin: 0.5,
-        filename: "SafarAI_Travel_Plan.pdf",
-        html2canvas: { scale: 2 },
-        jsPDF: { format: "a4", orientation: "portrait" }
-      })
-      .from(pdfRef.current)
-      .save();
+    html2pdf().from(pdfRef.current).save();
   };
 
   if (!result) {
     return (
       <div style={styles.page}>
-        <div style={styles.center}>
-          <h2 style={styles.noData}>No trip data available</h2>
-          <button style={styles.primaryBtn} onClick={() => navigate("/")}>
-            Go Back
-          </button>
-        </div>
+        <h2 style={{ color: "#fff" }}>No trip data</h2>
       </div>
     );
   }
 
   return (
-    <div style={styles.page}>
+    <motion.div
+      style={styles.page}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       <div style={styles.container}>
 
-        {/* PDF CONTENT AREA */}
+        {/* HERO */}
+        <motion.div
+          style={{
+            ...styles.hero,
+            backgroundImage: `url(${getImage(
+              result.trip_summary?.destination || "travel"
+            )})`,
+          }}
+          initial={{ y: -40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+        >
+          <div style={styles.overlay}>
+            <h1>{result.trip_summary?.destination}</h1>
+            <p>{result.trip_summary?.duration}</p>
+          </div>
+        </motion.div>
+
+        {/* CONTENT */}
         <div style={styles.wrapper} ref={pdfRef}>
 
-          {/* HEADER */}
-          <div style={styles.header}>
-            <h1 style={styles.logo}>SAFAR <span style={styles.logoAI}>AI</span></h1>
-            <p style={styles.subtitle}>Your Personalized Travel Plan</p>
-          </div>
-
-          {/* SECTION 1 */}
-          <Section title="📍 Suggested Places" color="#4285F4">
-            <Grid>
-              {result.Suggested_places?.map((p, i) => (
-                <Card key={i}>
-                  <h3 style={styles.cardTitle}>{p.place_name}</h3>
-                  <p style={styles.text}>{p.place_location_city}</p>
-                </Card>
+          {/* PLACES */}
+          <Section title="📍 Suggested Places">
+            <div style={styles.grid}>
+              {result.suggested_places?.map((p, i) => (
+                <motion.div
+                  key={i}
+                  style={styles.card}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <img src={getImage(p.place_name)} style={styles.img} />
+                  <h3>{p.place_name}</h3>
+                  <p>{p.place_location_city}</p>
+                </motion.div>
               ))}
-            </Grid>
+            </div>
           </Section>
 
-{/* SECTION 2 */}
-<Section title="🗓️ Daily Itinerary" color="#A142F4">
-  {Object.entries(result.itinerary || {}).map(([day, plan], i) => (
-    <Card key={i}>
-      <h3 style={styles.cardTitle}>{day.toUpperCase()}</h3>
+          {/* ITINERARY */}
+          <Section title="🗓️ Itinerary">
+            {Object.entries(result.itinerary || {}).map(([day, plan], i) => (
+              <motion.div
+                key={i}
+                style={styles.dayCard}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.2 }}
+              >
+                <h2>{day.toUpperCase()}</h2>
 
-      <p style={styles.text}>
-        <strong>Morning:</strong> {plan.morning?.activity}
-      </p>
-      <p style={styles.text}>
-        Details: {plan.morning?.details}
-      </p>
-      <p style={styles.text}>
-        Transport: {plan.morning?.transport}
-      </p>
-
-      <p style={styles.text}>
-        <strong>Afternoon:</strong> {plan.afternoon?.activity}
-      </p>
-      <p style={styles.text}>
-        Details: {plan.afternoon?.details}
-      </p>
-      <p style={styles.text}>
-        Transport: {plan.afternoon?.transport}
-      </p>
-
-      <p style={styles.text}>
-        <strong>Evening:</strong> {plan.evening?.activity}
-      </p>
-      <p style={styles.text}>
-        Details: {plan.evening?.details}
-      </p>
-      <p style={styles.text}>
-        Transport: {plan.evening?.transport}
-      </p>
-    </Card>
-  ))}
-</Section>
-
-
-
-          {/* SECTION 3 */}
-          <Section title="🚗 Travel Routes" color="#34A853">
-            {result.routes?.map((r, i) => (
-              <Card key={i}>
-                <h3 style={styles.cardTitle}>{r.from} → {r.to}</h3>
-                <p style={styles.text}>
-                  Distance: <b>{r.distance_km}</b> km | Time: <b>{r.travel_time}</b>
-                </p>
-
-                {r.map_link && (
-                  <a href={r.map_link} target="_blank" rel="noreferrer" style={styles.link}>
-                    Open in Google Maps →
-                  </a>
-                )}
-              </Card>
+                {[plan.morning, plan.afternoon, plan.evening].map((slot, idx) => (
+                  <div key={idx} style={styles.activity}>
+                    <img
+                      src={getImage(slot?.place || "travel")}
+                      style={styles.img}
+                    />
+                    <h4>{slot?.activity}</h4>
+                    <p>{slot?.details}</p>
+                    <small>🚗 {slot?.transport}</small>
+                  </div>
+                ))}
+              </motion.div>
             ))}
           </Section>
 
-          {/* SECTION 4 */}
-          <Section title="🗺️ Live Travel Map" color="#1A73E8">
+          {/* ROUTES */}
+          <Section title="🚗 Routes">
+            {result.routes?.map((r, i) => (
+              <div key={i} style={styles.card}>
+                <h3>{r.from} → {r.to}</h3>
+                <p>{r.distance_km} km • {r.travel_time}</p>
+              </div>
+            ))}
+          </Section>
+
+          {/* MAP */}
+          <Section title="🗺️ Map">
             <div style={styles.mapBox}>
               <TravelMapOSM routes={result.routes} />
             </div>
           </Section>
 
-          {/* SECTION 5 */}
-          <Section title="📝 Travel Advice" color="#EA4335">
-            <Card>
+          {/* RECOMMENDATIONS */}
+          <Section title="💡 Tips">
+            <div style={styles.card}>
               {result.recommendations?.map((t, i) => (
-                <p key={i} style={styles.text}>• {t}</p>
+                <p key={i}>• {t}</p>
               ))}
-            </Card>
-          </Section>
-
-          {/* SECTION 6 - CHATBOT */}
-          <Section title="🤖 Ask AI Travel Assistant" color="#FBBC05">
-            <div style={styles.chatBox}>
-              <p style={styles.chatText}>
-                Have more questions about your trip? Ask your AI assistant for:
-                <br /><br />
-                • Best time to visit places  
-                <br />
-                • Local food recommendations  
-                <br />
-                • Travel tips & safety  
-                <br />
-                • Route explanations  
-                <br />
-                • Custom itinerary changes
-              </p>
-
-              <button
-                style={styles.chatBtn}
-                onClick={() => navigate("/chat", { state: { tripContext: result } })}
-              >
-                💬 Open Chat Assistant
-              </button>
             </div>
           </Section>
 
         </div>
 
-        {/* ACTIONS */}
+        {/* BUTTONS */}
         <div style={styles.actions}>
-          <button style={styles.primaryBtn} onClick={downloadPDF}>
-            📄 Download PDF
+          <button style={styles.btn} onClick={downloadPDF}>
+            📄 Download
           </button>
-          <button style={styles.secondaryBtn} onClick={() => navigate("/")}>
+          <button style={styles.btn2} onClick={() => navigate("/")}>
             New Plan
           </button>
         </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-/* ---------------- HELPERS ---------------- */
-
-const Section = ({ title, color, children }) => (
-  <div style={{ marginBottom: 40 }}>
-    <h2 style={{ ...styles.sectionTitle, color }}>{title}</h2>
-    <div style={styles.sectionBody}>{children}</div>
+/* COMPONENT */
+const Section = ({ title, children }) => (
+  <div>
+    <h2 style={styles.section}>{title}</h2>
+    {children}
   </div>
 );
 
-const Grid = ({ children }) => (
-  <div style={styles.grid}>{children}</div>
-);
-
-const Card = ({ children }) => (
-  <div style={styles.card}>{children}</div>
-);
-
-/* ---------------- STYLES ---------------- */
-
+/* STYLES */
 const styles = {
   page: {
-   backgroundImage: `url(${mountainImg})`,
+    backgroundImage: `url(${mountainImg})`,
     backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundAttachment: "fixed",
     minHeight: "100vh",
-    fontFamily: "'Montserrat', 'Poppins', 'sans-serif'",
+  },
+  container: {
+    padding: "20px",
   },
 
-  container: {
-    minHeight: "100vh",
+  hero: {
+    height: "250px",
+    borderRadius: "20px",
+    backgroundSize: "cover",
+    marginBottom: "20px",
+  },
+
+  overlay: {
+    background: "rgba(0,0,0,0.5)",
+    height: "100%",
+    color: "#fff",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
     justifyContent: "center",
-    background: "rgba(0, 0, 0, 0.25)",
-    padding: "20px",
-    gap: "24px",
+    alignItems: "center",
+    borderRadius: "20px",
   },
 
   wrapper: {
-    width: "100%",
-    maxWidth: 850,
-    background: "rgba(255, 255, 255, 0.15)",
-    backdropFilter: "blur(25px) saturate(200%)",
-    borderRadius: "35px",
-    padding: "45px",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
-    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "32px",
+    background: "rgba(255,255,255,0.15)",
+    padding: "30px",
+    borderRadius: "20px",
+    backdropFilter: "blur(20px)",
   },
 
-  header: {
-    textAlign: "center",
-  },
-
-  logo: {
-    fontSize: 52,
-    fontWeight: 800,
-    letterSpacing: "4px",
-    color: "#201243",
-    fontFamily: "'Playfair Display', 'serif'",
-  },
-
-  logoAI: {
-    color: "#e20808",
-    fontWeight: 300,
-  },
-
-  subtitle: {
-    color: "#000000",
-    fontSize: 20,
-  },
-
-  sectionTitle: {
-    fontSize: 22,
-    fontFamily: "'Playfair Display', 'serif'",
-    marginBottom: 14,
-    fontWeight: 600,
-  },
-
-  sectionBody: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 14,
+  section: {
+    marginTop: "20px",
+    marginBottom: "10px",
   },
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: 15,
+    gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
+    gap: "15px",
   },
 
   card: {
-    background: "rgba(196, 220, 243, 0.41)",
-    borderRadius: 15,
-    padding: 18,
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-    boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+    background: "#fff",
+    padding: "10px",
+    borderRadius: "10px",
   },
 
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 600,
+  dayCard: {
+    background: "#fff",
+    padding: "15px",
+    marginBottom: "10px",
+    borderRadius: "10px",
   },
 
-  text: {
-    fontSize: 18,
-    lineHeight: 1.7,
-    color: "#000000",
-    fontFamily: "'Open Sans', 'sans-serif'",
+  activity: {
+    marginTop: "10px",
   },
 
-  link: {
-    marginTop: 6,
-    color: "#4285F4",
-    fontSize: 13,
-    textDecoration: "none",
+  img: {
+    width: "100%",
+    height: "150px",
+    objectFit: "cover",
+    borderRadius: "10px",
   },
 
   mapBox: {
-    borderRadius: 18,
+    height: "300px",
+    borderRadius: "10px",
     overflow: "hidden",
-    height: "400px",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.25)",
-  },
-
-  chatBox: {
-    background: "rgba(169, 187, 226, 0.95)",
-    borderRadius: 15,
-    padding: 18,
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
-  },
-
-  chatText: {
-    fontSize: 18,
-    color: "#000000",
-    lineHeight: 1.6,
-    fontFamily: "'Open Sans', 'sans-serif",
-  },
-
-  chatBtn: {
-    marginTop: 10,
-    padding: "12px 16px",
-    borderRadius: 20,
-    background: "linear-gradient(135deg, #4285F4 0%, #1a73e8 100%)",
-    color: "#fff",
-    border: "none",
-    cursor: "pointer",
-    fontWeight: "600",
   },
 
   actions: {
     display: "flex",
-    gap: 14,
-    width: "100%",
-    maxWidth: 850,
+    gap: "10px",
+    marginTop: "20px",
   },
 
-  primaryBtn: {
+  btn: {
     flex: 1,
-    padding: 14,
-    borderRadius: 50,
-    background: "linear-gradient(135deg, #4285F4 0%, #1a73e8 100%)",
+    padding: "10px",
+    background: "#2563eb",
     color: "#fff",
     border: "none",
-    fontSize: 16,
-    fontWeight: 500,
-    cursor: "pointer",
+    borderRadius: "10px",
   },
 
-  secondaryBtn: {
+  btn2: {
     flex: 1,
-    padding: 14,
-    borderRadius: 50,
-    background: "rgba(255,255,255,0.9)",
+    padding: "10px",
+    background: "#fff",
     border: "none",
-    fontSize: 16,
-    fontWeight: 500,
-    cursor: "pointer",
-  },
-
-  center: {
-    textAlign: "center",
-    padding: 40,
-  },
-
-  noData: {
-    color: "#fff",
+    borderRadius: "10px",
   },
 };
-
 
 export default TravelResult;
