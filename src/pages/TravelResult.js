@@ -4,7 +4,6 @@ import html2pdf from "html2pdf.js";
 import TravelMapOSM from "../components/TravelMapOSM";
 import mountainImg from "../assets/formpage_bg1.jpg";
 
-
 const TravelResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,70 +38,53 @@ const TravelResult = () => {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-
-        {/* PDF CONTENT AREA */}
         <div style={styles.wrapper} ref={pdfRef}>
-
-          {/* HEADER */}
           <div style={styles.header}>
             <h1 style={styles.logo}>SAFAR <span style={styles.logoAI}>AI</span></h1>
             <p style={styles.subtitle}>Your Personalized Travel Plan</p>
           </div>
 
-          {/* SECTION 1 */}
           <Section title="📍 Suggested Places" color="#4285F4">
             <Grid>
-              {result.Suggested_places?.map((p, i) => (
+              {(result.suggested_places || []).map((p, i) => (
                 <Card key={i}>
-                  <h3 style={styles.cardTitle}>{p.place_name}</h3>
-                  <p style={styles.text}>{p.place_location_city}</p>
+                  <h3 style={styles.cardTitle}>{p.name}</h3>
+                  <p style={styles.text}>{p.description}</p>
                 </Card>
               ))}
             </Grid>
           </Section>
 
-{/* SECTION 2 */}
-<Section title="🗓️ Daily Itinerary" color="#A142F4">
-  {Object.entries(result.itinerary || {}).map(([day, plan], i) => (
-    <Card key={i}>
-      <h3 style={styles.cardTitle}>{day.toUpperCase()}</h3>
+          <Section title="🗓️ Daily Itinerary" color="#A142F4">
+            {(result.itinerary || []).map((dayPlan, i) => (
+              <Card key={i}>
+                <h3 style={styles.cardTitle}>
+                  Day {dayPlan.day}: {dayPlan.theme}
+                </h3>
 
-      <p style={styles.text}>
-        <strong>Morning:</strong> {plan.morning?.activity}
-      </p>
-      <p style={styles.text}>
-        Details: {plan.morning?.details}
-      </p>
-      <p style={styles.text}>
-        Transport: {plan.morning?.transport}
-      </p>
+                {(dayPlan.activities || []).map((activity, index) => (
+                  <div key={index} style={styles.activityBlock}>
+                    <p style={styles.text}>
+                      <strong>{activity.time}:</strong> {activity.title}
+                    </p>
 
-      <p style={styles.text}>
-        <strong>Afternoon:</strong> {plan.afternoon?.activity}
-      </p>
-      <p style={styles.text}>
-        Details: {plan.afternoon?.details}
-      </p>
-      <p style={styles.text}>
-        Transport: {plan.afternoon?.transport}
-      </p>
+                    <p style={styles.text}>
+                      <strong>Details:</strong> {activity.details}
+                    </p>
 
-      <p style={styles.text}>
-        <strong>Evening:</strong> {plan.evening?.activity}
-      </p>
-      <p style={styles.text}>
-        Details: {plan.evening?.details}
-      </p>
-      <p style={styles.text}>
-        Transport: {plan.evening?.transport}
-      </p>
-    </Card>
-  ))}
-</Section>
+                    <p style={styles.text}>
+                      <strong>Location:</strong> {activity.location}
+                    </p>
 
+                    <p style={styles.text}>
+                      <strong>Transport:</strong> {activity.transport}
+                    </p>
+                  </div>
+                ))}
+              </Card>
+            ))}
+          </Section>
 
-
-          {/* SECTION 3 */}
           <Section title="🚗 Travel Routes" color="#34A853">
             {result.routes?.map((r, i) => (
               <Card key={i}>
@@ -120,14 +102,12 @@ const TravelResult = () => {
             ))}
           </Section>
 
-          {/* SECTION 4 */}
           <Section title="🗺️ Live Travel Map" color="#1A73E8">
             <div style={styles.mapBox}>
               <TravelMapOSM routes={result.routes} />
             </div>
           </Section>
 
-          {/* SECTION 5 */}
           <Section title="📝 Travel Advice" color="#EA4335">
             <Card>
               {result.recommendations?.map((t, i) => (
@@ -136,19 +116,18 @@ const TravelResult = () => {
             </Card>
           </Section>
 
-          {/* SECTION 6 - CHATBOT */}
           <Section title="🤖 Ask AI Travel Assistant" color="#FBBC05">
             <div style={styles.chatBox}>
               <p style={styles.chatText}>
                 Have more questions about your trip? Ask your AI assistant for:
                 <br /><br />
-                • Best time to visit places  
+                • Best time to visit places
                 <br />
-                • Local food recommendations  
+                • Local food recommendations
                 <br />
-                • Travel tips & safety  
+                • Travel tips & safety
                 <br />
-                • Route explanations  
+                • Route explanations
                 <br />
                 • Custom itinerary changes
               </p>
@@ -161,10 +140,8 @@ const TravelResult = () => {
               </button>
             </div>
           </Section>
-
         </div>
 
-        {/* ACTIONS */}
         <div style={styles.actions}>
           <button style={styles.primaryBtn} onClick={downloadPDF}>
             📄 Download PDF
@@ -173,13 +150,10 @@ const TravelResult = () => {
             New Plan
           </button>
         </div>
-
       </div>
     </div>
   );
 };
-
-/* ---------------- HELPERS ---------------- */
 
 const Section = ({ title, color, children }) => (
   <div style={{ marginBottom: 40 }}>
@@ -196,11 +170,9 @@ const Card = ({ children }) => (
   <div style={styles.card}>{children}</div>
 );
 
-/* ---------------- STYLES ---------------- */
-
 const styles = {
   page: {
-   backgroundImage: `url(${mountainImg})`,
+    backgroundImage: `url(${mountainImg})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundAttachment: "fixed",
@@ -284,6 +256,11 @@ const styles = {
     boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
   },
 
+  activityBlock: {
+    padding: "12px 0",
+    borderBottom: "1px solid rgba(0,0,0,0.12)",
+  },
+
   cardTitle: {
     fontSize: 16,
     fontWeight: 600,
@@ -323,7 +300,7 @@ const styles = {
     fontSize: 18,
     color: "#000000",
     lineHeight: 1.6,
-    fontFamily: "'Open Sans', 'sans-serif",
+    fontFamily: "'Open Sans', 'sans-serif'",
   },
 
   chatBtn: {
@@ -375,6 +352,6 @@ const styles = {
   noData: {
     color: "#fff",
   },
-};  
+};
 
-export default TravelResult; 
+export default TravelResult;
