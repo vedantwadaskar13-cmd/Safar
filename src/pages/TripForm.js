@@ -3,9 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import mountainImg from "../assets/formpage_bg1.jpg";
 import API_BASE_URL from "../config";
+import { auth } from "../firebase"; // ✅ NEW
 
-const TripForm = ({ user }) => {
+const TripForm = () => {
   const navigate = useNavigate();
+
+  const user = auth.currentUser; // ✅ FIXED (instead of props)
 
   const [formData, setFormData] = useState({
     state: "",
@@ -20,12 +23,21 @@ const TripForm = ({ user }) => {
 
   const [loading, setLoading] = useState(false);
 
+  console.log("User:", user); // ✅ DEBUG
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ FIX: prevent crash if user not loaded
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -34,23 +46,18 @@ const TripForm = ({ user }) => {
         ...formData,
       });
 
-      if (res.data.success) {
-        navigate("/result", {
-          state: { result: res.data.data },
-        });
-      } else {
-        alert(res.data.error || "Failed to generate trip plan");
+      if (!res.data.success) {
+        alert(res.data.error || "Failed to generate trip");
+        return;
       }
-    } catch (error) {
-      console.error(
-        "Trip generation error:",
-        error.response?.data || error.message
-      );
 
-      alert(
-        error.response?.data?.error ||
-          "Failed to generate trip plan"
-      );
+      navigate("/result", {
+        state: { result: res.data.data },
+      });
+
+    } catch (error) {
+      console.error("Trip generation error:", error);
+      alert("Failed to generate trip plan");
     }
 
     setLoading(false);
@@ -58,6 +65,7 @@ const TripForm = ({ user }) => {
 
   return (
     <div style={styles.page}>
+      
       {/* BACK BUTTON */}
       <button onClick={() => navigate(-1)} style={styles.backBtn}>
         ← Back
@@ -65,6 +73,7 @@ const TripForm = ({ user }) => {
 
       <div style={styles.container}>
         <div style={styles.glassCard}>
+
           <div style={styles.brandBox}>
             <h1 style={styles.logoMain}>
               SAFAR <span style={styles.logoAi}>AI</span>
@@ -78,133 +87,114 @@ const TripForm = ({ user }) => {
 
           <form onSubmit={handleSubmit}>
             <div style={styles.grid}>
-              <div style={styles.field}>
-                <input
-                  style={{ ...styles.input, ...styles.blueBorder }}
-                  type="text"
-                  name="state"
-                  placeholder="Enter destination state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
 
-              <div style={styles.field}>
-                <input
-                  style={{ ...styles.input, ...styles.blueBorder }}
-                  type="text"
-                  name="destination_city"
-                  placeholder="Enter destination city (optional)"
-                  value={formData.destination_city}
-                  onChange={handleChange}
-                />
-              </div>
+              <input
+                style={{ ...styles.input, ...styles.blueBorder }}
+                type="text"
+                name="state"
+                placeholder="Enter destination state"
+                value={formData.state}
+                onChange={handleChange}
+                required
+              />
 
-              <div style={styles.field}>
-                <input
-                  style={{ ...styles.input, ...styles.greenBorder }}
-                  type="text"
-                  name="user_city"
-                  placeholder="Leaving from..."
-                  value={formData.user_city}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <input
+                style={{ ...styles.input, ...styles.blueBorder }}
+                type="text"
+                name="destination_city"
+                placeholder="Enter destination city (optional)"
+                value={formData.destination_city}
+                onChange={handleChange}
+              />
 
-              <div style={styles.field}>
-                <select
-                  style={{ ...styles.select, ...styles.purpleTheme }}
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Travel type
-                  </option>
-                  {["Cultural", "Nature", "Hill Station", "Adventure", "Any"].map(
-                    (opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
+              <input
+                style={{ ...styles.input, ...styles.greenBorder }}
+                type="text"
+                name="user_city"
+                placeholder="Leaving from..."
+                value={formData.user_city}
+                onChange={handleChange}
+                required
+              />
 
-              <div style={styles.field}>
-                <select
-                  style={{ ...styles.select, ...styles.orangeTheme }}
-                  name="ageGroup"
-                  value={formData.ageGroup}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Who's going?
-                  </option>
-                  {["Solo", "Couple", "Family", "Friends"].map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <select
+                style={{ ...styles.select, ...styles.purpleTheme }}
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>Travel type</option>
+                {["Cultural", "Nature", "Hill Station", "Adventure", "Any"].map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
 
-              <div style={styles.field}>
-                <input
-                  style={{ ...styles.input, ...styles.redBorder }}
-                  type="number"
-                  name="days"
-                  placeholder="Days"
-                  value={formData.days}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <select
+                style={{ ...styles.select, ...styles.orangeTheme }}
+                name="ageGroup"
+                value={formData.ageGroup}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>Who's going?</option>
+                {["Solo", "Couple", "Family", "Friends"].map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
 
-              <div style={styles.field}>
-                <input
-                  style={{ ...styles.input, ...styles.greenBorder }}
-                  type="number"
-                  name="num_people"
-                  placeholder="Number of Travelers"
-                  value={formData.num_people}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                />
-              </div>
+              <input
+                style={{ ...styles.input, ...styles.redBorder }}
+                type="number"
+                name="days"
+                placeholder="Days"
+                value={formData.days}
+                onChange={handleChange}
+                required
+              />
 
-              <div style={styles.field}>
-                <select
-                  style={{ ...styles.select, ...styles.goldTheme }}
-                  name="budget"
-                  value={formData.budget}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Budget
-                  </option>
-                  <option value="Low">Economy</option>
-                  <option value="Medium">Standard</option>
-                  <option value="High">Luxury</option>
-                </select>
-              </div>
+              <input
+                style={{ ...styles.input, ...styles.greenBorder }}
+                type="number"
+                name="num_people"
+                placeholder="Number of Travelers"
+                value={formData.num_people}
+                onChange={handleChange}
+                required
+                min="1"
+              />
+
+              <select
+                style={{ ...styles.select, ...styles.goldTheme }}
+                name="budget"
+                value={formData.budget}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>Budget</option>
+                <option value="Low">Economy</option>
+                <option value="Medium">Standard</option>
+                <option value="High">Luxury</option>
+              </select>
+
             </div>
 
-            <button style={styles.mainButton} type="submit" disabled={loading}>
+            <button 
+              style={styles.mainButton} 
+              type="submit" 
+              disabled={loading || !user} // ✅ FIXED
+            >
               {loading ? "Crafting Itinerary..." : "Explore Now"}
             </button>
           </form>
+
         </div>
       </div>
     </div>
   );
 };
+
+/* ---------------- STYLES ---------------- */
 
 const styles = {
   page: {
@@ -214,7 +204,6 @@ const styles = {
     backgroundPosition: "center",
     backgroundAttachment: "fixed",
     minHeight: "100vh",
-    fontFamily: "'Montserrat', 'Poppins', sans-serif",
   },
 
   container: {
@@ -232,9 +221,7 @@ const styles = {
     padding: "45px",
     borderRadius: "35px",
     backgroundColor: "rgba(255, 255, 255, 0.15)",
-    backdropFilter: "blur(25px) saturate(200%)",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
-    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)",
+    backdropFilter: "blur(25px)",
     textAlign: "center",
   },
 
@@ -247,41 +234,28 @@ const styles = {
     border: "none",
     background: "#1e293b",
     color: "#fff",
-    fontSize: "14px",
     cursor: "pointer",
-    zIndex: 10,
-  },
-
-  brandBox: {
-    marginBottom: "5px",
   },
 
   logoMain: {
     fontSize: "52px",
     fontWeight: "800",
-    letterSpacing: "4px",
-    color: "#FFFFFF",
-    margin: "0",
-    fontFamily: "'Playfair Display', serif",
+    color: "#fff",
   },
 
   logoAi: {
     color: "#4285F4",
-    fontWeight: "300",
   },
 
   brandUnderline: {
     width: "80px",
     height: "3px",
-    background:
-      "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)",
+    background: "linear-gradient(to right, #4285F4, #34A853)",
     margin: "8px auto",
-    borderRadius: "2px",
   },
 
   tagline: {
     color: "#F0F0F0",
-    fontSize: "14px",
     marginBottom: "40px",
   },
 
@@ -292,46 +266,24 @@ const styles = {
     marginBottom: "25px",
   },
 
-  field: {
-    width: "100%",
-  },
-
   input: {
-    width: "100%",
-    padding: "14px 18px",
+    padding: "14px",
     borderRadius: "15px",
-    border: "2px solid rgba(255,255,255,0.2)",
-    background: "rgba(255,255,255,0.95)",
-    fontSize: "14px",
-    boxSizing: "border-box",
   },
 
   select: {
-    width: "100%",
-    padding: "14px 18px",
+    padding: "14px",
     borderRadius: "15px",
-    fontSize: "14px",
-    boxSizing: "border-box",
   },
-
-  blueBorder: { borderColor: "#4285F4" },
-  greenBorder: { borderColor: "#34A853" },
-  redBorder: { borderColor: "#EA4335" },
-
-  purpleTheme: { borderColor: "#A142F4" },
-  orangeTheme: { borderColor: "#FB8C00" },
-  goldTheme: { borderColor: "#FBBC05" },
 
   mainButton: {
     width: "100%",
     padding: "18px",
-    border: "none",
     borderRadius: "50px",
-    background: "linear-gradient(135deg, #4285F4 0%, #1a73e8 100%)",
-    color: "#FFFFFF",
-    fontSize: "18px",
+    background: "#4285F4",
+    color: "#fff",
     cursor: "pointer",
-  },
+  }
 };
 
 export default TripForm;
