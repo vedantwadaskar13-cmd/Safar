@@ -64,10 +64,10 @@ def create_generate_plan_tool(llm):
             # =========================
             # 🔥 IMPROVED PROMPT
             # =========================
-            prompt = f"""
+   prompt = f"""
 You are a premium travel planner like MakeMyTrip.
 
-Create a HIGH QUALITY travel plan.
+Create a realistic, frontend-ready travel itinerary using the supplied places first.
 
 TRIP DETAILS:
 From: {user_city}
@@ -75,7 +75,7 @@ To: {destination}
 Days: {days}
 Travelers: {travelers}
 Budget: {budget}
-Type: {trip_style}
+Trip Style: {trip_style}
 
 PLACES:
 {json.dumps(all_clusters_info, indent=2)}
@@ -84,18 +84,22 @@ ROUTES:
 {routes_summary}
 
 RULES:
-- Do NOT leave any field empty
-- Be specific (no generic text)
-- Use real place names
-- Add transport details
-- Add food suggestions
-- Keep it realistic
+- Return only valid JSON. No markdown.
+- Do not leave any field empty.
+- Create exactly {days} days.
+- Each day must have exactly 3 activities: Morning, Afternoon, Evening.
+- Use real place names from PLACES wherever possible.
+- Keep the route realistic and avoid unnecessary backtracking.
+- Add transport, lunch/food, and dinner details.
+- Match the plan to budget, travelers, and trip style.
+- Activity descriptions must be 3-4 short itinerary-style sentences, like: "Arrive in Kaziranga National Park. Check into a high-end resort. Spend the afternoon relaxing and exploring the resort's amenities. Evening safari in the park to spot wildlife like rhinoceros, elephants, and birds."
+- Avoid vague text like "Explore popular attractions" or "Enjoy local food".
+- Recommendations must be practical and destination-specific.
 
 RETURN STRICT JSON:
-
 {{
   "trip_summary": {{
-    "title": "",
+    "title": "Specific attractive trip title",
     "destination": "{destination}",
     "duration": "{days} Days",
     "budget": "{budget}"
@@ -103,39 +107,41 @@ RETURN STRICT JSON:
   "itinerary": [
     {{
       "day": 1,
-      "theme": "",
+      "theme": "Specific day theme",
       "activities": [
         {{
           "time": "Morning",
-          "title": "",
-          "description": "",
-          "location": "",
-          "transport": ""
+          "title": "Specific activity title",
+          "description": "3-4 short itinerary-style sentences.",
+          "location": "Specific place or area name",
+          "transport": "Specific transport suggestion"
         }},
         {{
           "time": "Afternoon",
-          "title": "",
-          "description": "",
-          "location": "",
-          "food": ""
+          "title": "Specific activity title",
+          "description": "3-4 short itinerary-style sentences.",
+          "location": "Specific place or area name",
+          "food": "Specific lunch or snack suggestion"
         }},
         {{
           "time": "Evening",
-          "title": "",
-          "description": "",
-          "location": "",
-          "dinner": ""
+          "title": "Specific activity title",
+          "description": "3-4 short itinerary-style sentences.",
+          "location": "Specific place or area name",
+          "dinner": "Specific dinner suggestion"
         }}
       ]
     }}
   ],
   "recommendations": [
-    "",
-    "",
-    ""
+    "Specific practical recommendation 1",
+    "Specific practical recommendation 2",
+    "Specific practical recommendation 3"
   ]
 }}
 """
+
+
 
             # =========================
             # 🤖 LLM CALL
