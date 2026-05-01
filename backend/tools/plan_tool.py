@@ -61,16 +61,17 @@ def create_generate_plan_tool(llm):
             else:
                 routes_summary = "Suggest best route"
 
-            # =========================
-            # 🔥 IMPROVED PROMPT
-            # =========================
-  prompt = f"""You are an expert travel planner. Return ONLY valid JSON, no markdown.
+        
+# =========================
+# 🔥 IMPROVED PROMPT
+# =========================
+            prompt = f""" You are an expert travel planner. Return ONLY valid JSON, no markdown.
 
 TRIP: {user_city} → {destination} | {days} days | {travelers} traveler(s) | {budget} | {trip_style}
 
 PLACES (use these):
 {json.dumps([
-    {"city": c["city"], "places": [p["place_name"] for p in c["places"]]}
+    {"city": c["city"], "places": [p["name"] for p in c["places"]]}
     for c in all_clusters_info
 ], separators=(',', ':'))}
 
@@ -79,25 +80,22 @@ ROUTES: {routes_summary}
 RULES:
 1. Exactly {days} days, 3 activities each (Morning/Afternoon/Evening).
 2. Every activity: time, title, details, location, transport.
-3. details = 3-4 sentences. Include food naturally. Be specific, no vague phrases.
-4. Use real place names from PLACES above.
-5. Keep route geographically logical, no backtracking.
-6. 3 practical destination-specific recommendations.
-
-EXAMPLE activity details style:
-"Arrive at Amber Fort by 9am. Explore the Sheesh Mahal and Diwan-e-Aam with a local guide. Stop for poha and chai at a nearby dhaba before heading to the next stop."
+3. details = 3-4 sentences. Include food naturally. Be specific.
+4. Use real place names.
+5. Keep route logical.
+6. 3 recommendations.
 
 OUTPUT:
 {{
-  "trip_summary":{{"title":"<catchy title>","destination":"{destination}","duration":"{days} Days","budget":"{budget}"}},
+  "trip_summary":{{"title":"<title>","destination":"{destination}","duration":"{days} Days","budget":"{budget}"}},
   "itinerary":[
     {{
       "day":1,
-      "theme":"<specific theme>",
+      "theme":"<theme>",
       "activities":[
-        {{"time":"Morning","title":"<title>","details":"<3-4 sentences>","location":"<place>","transport":"<mode>"}},
-        {{"time":"Afternoon","title":"<title>","details":"<3-4 sentences with lunch>","location":"<place>","transport":"<mode>"}},
-        {{"time":"Evening","title":"<title>","details":"<3-4 sentences with dinner>","location":"<place>","transport":"<mode>"}}
+        {{"time":"Morning","title":"<title>","details":"<text>","location":"<place>","transport":"<mode>"}},
+        {{"time":"Afternoon","title":"<title>","details":"<text>","location":"<place>","transport":"<mode>"}},
+        {{"time":"Evening","title":"<title>","details":"<text>","location":"<place>","transport":"<mode>"}}
       ]
     }}
   ],
