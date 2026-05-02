@@ -223,23 +223,26 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     color: "white",
+    padding: "20px",
   },
 
   backBtn: {
     position: "absolute",
-    top: "20px",
-    left: "20px",
-    padding: "8px 14px",
+    top: "15px",
+    left: "15px",
+    padding: "8px 12px",
     borderRadius: "8px",
     border: "none",
     background: "rgba(0,0,0,0.5)",
     color: "white",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   profileBox: {
-    width: "700px",
-    padding: "30px",
+    width: "100%",
+    maxWidth: "700px",
+    padding: "25px",
     borderRadius: "16px",
     background: "rgba(255,255,255,0.1)",
     backdropFilter: "blur(15px)",
@@ -247,37 +250,43 @@ const styles = {
 
   header: {
     display: "flex",
-    gap: "30px",
+    gap: "20px",
     alignItems: "center",
+    flexWrap: "wrap", // ✅ mobile fix
+    justifyContent: "center",
+    textAlign: "center",
   },
 
   avatar: {
-    width: "120px",
-    height: "120px",
+    width: "100px",
+    height: "100px",
     borderRadius: "50%",
     objectFit: "cover",
   },
 
   initialAvatar: {
-    width: "120px",
-    height: "120px",
+    width: "100px",
+    height: "100px",
     borderRadius: "50%",
     background: "linear-gradient(135deg, #2563eb, #16a34a)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "36px",
+    fontSize: "28px",
     fontWeight: "bold",
   },
 
   info: {
     flex: 1,
+    minWidth: "200px",
   },
 
   tabs: {
     marginTop: "15px",
     display: "flex",
-    gap: "20px",
+    gap: "12px",
+    flexWrap: "wrap", // ✅ mobile fix
+    justifyContent: "center",
   },
 
   tab: {
@@ -285,6 +294,7 @@ const styles = {
     border: "none",
     color: "#ccc",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   activeTab: {
@@ -293,22 +303,24 @@ const styles = {
     border: "none",
     color: "white",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   content: {
-    marginTop: "30px",
+    marginTop: "25px",
   },
 
   settings: {
     display: "flex",
     flexDirection: "column",
-    gap: "15px",
+    gap: "12px",
   },
 
   input: {
     padding: "10px",
     borderRadius: "8px",
     border: "none",
+    fontSize: "14px",
   },
 
   saveBtn: {
@@ -318,6 +330,7 @@ const styles = {
     color: "white",
     borderRadius: "8px",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   removeBtn: {
@@ -327,14 +340,16 @@ const styles = {
     color: "white",
     borderRadius: "8px",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   tripCard: {
     background: "rgba(255,255,255,0.15)",
-    padding: "15px",
+    padding: "12px",
     borderRadius: "10px",
     marginBottom: "10px",
     border: "1px solid rgba(255,255,255,0.2)",
+    fontSize: "14px",
   },
 };
 
