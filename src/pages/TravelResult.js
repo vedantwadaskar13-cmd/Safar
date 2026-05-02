@@ -187,22 +187,22 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     background: "rgba(0, 0, 0, 0.25)",
-    padding: "20px",
-    gap: "24px",
+    padding: "16px",
+    gap: "20px",
   },
 
   wrapper: {
     width: "100%",
-    maxWidth: 850,
+    maxWidth: "850px",
     background: "rgba(255, 255, 255, 0.15)",
     backdropFilter: "blur(25px) saturate(200%)",
-    borderRadius: "35px",
-    padding: "45px",
+    borderRadius: "25px",
+    padding: "25px",
     border: "1px solid rgba(255, 255, 255, 0.3)",
     boxShadow: "0 20px 50px rgba(0, 0, 0, 0.3)",
     display: "flex",
     flexDirection: "column",
-    gap: "32px",
+    gap: "24px",
   },
 
   header: {
@@ -210,11 +210,10 @@ const styles = {
   },
 
   logo: {
-    fontSize: 52,
+    fontSize: "clamp(28px, 6vw, 52px)", // ✅ responsive font
     fontWeight: 800,
-    letterSpacing: "4px",
+    letterSpacing: "3px",
     color: "#201243",
-    fontFamily: "'Playfair Display', 'serif'",
   },
 
   logoAI: {
@@ -223,130 +222,126 @@ const styles = {
   },
 
   subtitle: {
-    color: "#000000",
-    fontSize: 20,
+    color: "#000",
+    fontSize: "clamp(14px, 3vw, 20px)",
   },
 
   sectionTitle: {
-    fontSize: 22,
-    fontFamily: "'Playfair Display', 'serif'",
-    marginBottom: 14,
+    fontSize: "clamp(18px, 4vw, 22px)",
+    marginBottom: 12,
     fontWeight: 600,
   },
 
   sectionBody: {
     display: "flex",
     flexDirection: "column",
-    gap: 14,
+    gap: 12,
   },
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: 15,
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", // ✅ mobile safe
+    gap: 12,
   },
 
   card: {
     background: "rgba(196, 220, 243, 0.41)",
-    borderRadius: 15,
-    padding: 18,
+    borderRadius: 12,
+    padding: 14,
     display: "flex",
     flexDirection: "column",
     gap: 6,
-    boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+    boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
   },
 
   activityBlock: {
-    padding: "12px 0",
-    borderBottom: "1px solid rgba(0,0,0,0.12)",
+    padding: "10px 0",
+    borderBottom: "1px solid rgba(0,0,0,0.1)",
   },
 
   cardTitle: {
-    fontSize: 16,
+    fontSize: "clamp(14px, 3.5vw, 16px)",
     fontWeight: 600,
   },
 
   text: {
-    fontSize: 18,
-    lineHeight: 1.7,
-    color: "#000000",
-    fontFamily: "'Open Sans', 'sans-serif'",
+    fontSize: "clamp(13px, 3.2vw, 16px)",
+    lineHeight: 1.5,
+    color: "#000",
   },
 
   link: {
     marginTop: 6,
     color: "#4285F4",
-    fontSize: 13,
-    textDecoration: "none",
+    fontSize: 12,
   },
 
   mapBox: {
-    borderRadius: 18,
+    borderRadius: 14,
     overflow: "hidden",
-    height: "400px",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.25)",
+    height: "clamp(250px, 40vw, 400px)", // ✅ responsive map
+    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
   },
 
   chatBox: {
     background: "rgba(169, 187, 226, 0.95)",
-    borderRadius: 15,
-    padding: 18,
+    borderRadius: 12,
+    padding: 14,
     display: "flex",
     flexDirection: "column",
-    gap: 12,
+    gap: 10,
   },
 
   chatText: {
-    fontSize: 18,
-    color: "#000000",
-    lineHeight: 1.6,
-    fontFamily: "'Open Sans', 'sans-serif'",
+    fontSize: "clamp(13px, 3.2vw, 16px)",
+    lineHeight: 1.5,
   },
 
   chatBtn: {
-    marginTop: 10,
-    padding: "12px 16px",
+    padding: "10px 14px",
     borderRadius: 20,
-    background: "linear-gradient(135deg, #4285F4 0%, #1a73e8 100%)",
+    background: "linear-gradient(135deg, #4285F4, #1a73e8)",
     color: "#fff",
     border: "none",
     cursor: "pointer",
     fontWeight: "600",
+    fontSize: "14px",
   },
 
   actions: {
     display: "flex",
-    gap: 14,
+    flexWrap: "wrap", // ✅ key fix
+    gap: 10,
     width: "100%",
     maxWidth: 850,
   },
 
   primaryBtn: {
     flex: 1,
-    padding: 14,
-    borderRadius: 50,
-    background: "linear-gradient(135deg, #4285F4 0%, #1a73e8 100%)",
+    minWidth: "140px", // ✅ prevents squish
+    padding: 12,
+    borderRadius: 40,
+    background: "linear-gradient(135deg, #4285F4, #1a73e8)",
     color: "#fff",
     border: "none",
-    fontSize: 16,
-    fontWeight: 500,
+    fontSize: 14,
     cursor: "pointer",
   },
 
   secondaryBtn: {
     flex: 1,
-    padding: 14,
-    borderRadius: 50,
+    minWidth: "140px",
+    padding: 12,
+    borderRadius: 40,
     background: "rgba(255,255,255,0.9)",
     border: "none",
-    fontSize: 16,
-    fontWeight: 500,
+    fontSize: 14,
     cursor: "pointer",
   },
 
   center: {
     textAlign: "center",
-    padding: 40,
+    padding: 30,
   },
 
   noData: {
