@@ -212,14 +212,14 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     background: "rgba(0, 0, 0, 0.25)",
-    padding: "20px",
+    padding: "15px", // ✅ reduced for mobile
   },
 
   glassCard: {
     width: "100%",
     maxWidth: "580px",
-    padding: "45px",
-    borderRadius: "35px",
+    padding: "clamp(20px, 5vw, 45px)", // ✅ responsive padding
+    borderRadius: "25px",
     backgroundColor: "rgba(255, 255, 255, 0.15)",
     backdropFilter: "blur(25px)",
     textAlign: "center",
@@ -227,18 +227,19 @@ const styles = {
 
   backBtn: {
     position: "absolute",
-    top: "20px",
-    left: "20px",
-    padding: "10px 16px",
+    top: "10px",
+    left: "10px",
+    padding: "8px 12px", // ✅ smaller for mobile
     borderRadius: "10px",
     border: "none",
     background: "#1e293b",
     color: "#fff",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   logoMain: {
-    fontSize: "52px",
+    fontSize: "clamp(28px, 6vw, 52px)", // ✅ responsive text
     fontWeight: "800",
     color: "#fff",
   },
@@ -248,7 +249,7 @@ const styles = {
   },
 
   brandUnderline: {
-    width: "80px",
+    width: "60px",
     height: "3px",
     background: "linear-gradient(to right, #4285F4, #34A853)",
     margin: "8px auto",
@@ -256,34 +257,41 @@ const styles = {
 
   tagline: {
     color: "#F0F0F0",
-    marginBottom: "40px",
+    marginBottom: "25px", // ✅ reduced spacing
+    fontSize: "clamp(12px, 3.5vw, 14px)",
   },
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "15px",
-    marginBottom: "25px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", // ✅ KEY FIX
+    gap: "12px",
+    marginBottom: "20px",
   },
 
   input: {
-    padding: "14px",
-    borderRadius: "15px",
+    width: "100%", // ✅ prevent overflow
+    padding: "12px",
+    borderRadius: "12px",
+    fontSize: "14px",
+    boxSizing: "border-box",
   },
 
   select: {
-    padding: "14px",
-    borderRadius: "15px",
+    width: "100%", // ✅ prevent overflow
+    padding: "12px",
+    borderRadius: "12px",
+    fontSize: "14px",
+    boxSizing: "border-box",
   },
 
   mainButton: {
     width: "100%",
-    padding: "18px",
-    borderRadius: "50px",
+    padding: "14px", // ✅ smaller button
+    borderRadius: "40px",
     background: "#4285F4",
     color: "#fff",
     cursor: "pointer",
+    fontSize: "clamp(14px, 4vw, 16px)",
   }
 };
-
 export default TripForm;
