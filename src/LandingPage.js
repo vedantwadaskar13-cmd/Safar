@@ -129,7 +129,7 @@ const LandingPage = ({ user }) => {
 
 const styles = {
   container: {
-    height: "100vh",
+    minHeight: "100vh",
     width: "100%",
     backgroundImage: `linear-gradient(rgba(0,0,0,0.48), rgba(0,0,0,0.48)), url(${bgImage})`,
     backgroundSize: "cover",
@@ -137,7 +137,6 @@ const styles = {
     color: "white",
     display: "flex",
     flexDirection: "column",
-    overflow: "hidden",
   },
 
   navbar: {
@@ -150,8 +149,6 @@ const styles = {
 
   navSideLeft: {
     flex: 1,
-    display: "flex",
-    justifyContent: "flex-start",
   },
 
   navSideRight: {
@@ -170,7 +167,7 @@ const styles = {
   },
 
   logo: {
-    fontSize: "34px",
+    fontSize: "28px",
     fontWeight: "800",
     cursor: "pointer",
   },
@@ -180,28 +177,23 @@ const styles = {
     border: "none",
     color: "white",
     fontSize: "16px",
-    fontWeight: "600",
     cursor: "pointer",
   },
 
   profileBtn: {
     padding: "8px 14px",
-    background: "rgba(37, 99, 235, 0.9)",
-    border: "none",
+    background: "#2563eb",
     borderRadius: "8px",
     color: "white",
-    cursor: "pointer",
-    fontWeight: "600",
+    border: "none",
   },
 
   logoutBtn: {
     padding: "8px 14px",
-    background: "rgba(220, 38, 38, 0.9)",
-    border: "none",
+    background: "#dc2626",
     borderRadius: "8px",
     color: "white",
-    cursor: "pointer",
-    fontWeight: "600",
+    border: "none",
   },
 
   main: {
@@ -220,7 +212,6 @@ const styles = {
   centered: {
     margin: "0 auto",
     textAlign: "center",
-    transform: "scale(1.05)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -228,58 +219,43 @@ const styles = {
 
   title: {
     fontSize: "64px",
-    lineHeight: "1.18",
     fontWeight: "900",
-    margin: 0,
-    textShadow: "0 4px 18px rgba(0,0,0,0.35)",
   },
 
   subtitle: {
-    marginTop: "24px",
-    fontSize: "22px",
-    lineHeight: "1.5",
-    color: "rgba(255,255,255,0.92)",
-    maxWidth: "540px",
+    marginTop: "20px",
+    fontSize: "20px",
   },
 
   welcome: {
-    marginTop: "12px",
+    marginTop: "10px",
     color: "#90ee90",
-    fontSize: "18px",
-    fontWeight: "600",
   },
 
   btnGroup: {
-    marginTop: "30px",
+    marginTop: "25px",
     display: "flex",
-    justifyContent: "center",
     gap: "18px",
-    width: "100%",
   },
 
   primaryBtn: {
-    padding: "15px 28px",
+    padding: "14px 24px",
     background: "white",
-    color: "#0f172a",
+    color: "#000",
+    borderRadius: "10px",
     border: "none",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "17px",
-    fontWeight: "800",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+    fontWeight: "700",
   },
 
   secondaryBtn: {
-    padding: "15px 28px",
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.55)",
-    borderRadius: "12px",
+    padding: "14px 24px",
+    background: "transparent",
+    border: "1px solid white",
+    borderRadius: "10px",
     color: "white",
-    cursor: "pointer",
-    fontSize: "17px",
-    fontWeight: "800",
-    backdropFilter: "blur(8px)",
   },
 };
+
+export default LandingPage;
 
 export default LandingPage;
