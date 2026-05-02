@@ -90,25 +90,27 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: "30px",
+    padding: "20px",
     position: "relative",
   },
 
   backBtn: {
     position: "absolute",
-    top: "20px",
-    left: "20px",
-    padding: "8px 14px",
+    top: "15px",
+    left: "15px",
+    padding: "8px 12px",
     borderRadius: "8px",
     border: "none",
     background: "rgba(0,0,0,0.5)",
     color: "white",
     cursor: "pointer",
+    fontSize: "14px",
   },
 
   card: {
-    width: "720px",
-    padding: "35px",
+    width: "100%",
+    maxWidth: "720px",
+    padding: "25px",
     borderRadius: "18px",
     background: "rgba(255,255,255,0.12)",
     backdropFilter: "blur(18px)",
@@ -116,24 +118,27 @@ const styles = {
   },
 
   title: {
-    fontSize: "36px",
+    fontSize: "28px",
     marginBottom: "10px",
+    textAlign: "center",
   },
 
   subtitle: {
     color: "#ddd",
-    marginBottom: "25px",
+    marginBottom: "20px",
+    textAlign: "center",
+    fontSize: "14px",
   },
 
   section: {
-    marginTop: "25px",
+    marginTop: "20px",
   },
 
   faq: {
     background: "rgba(255,255,255,0.1)",
-    padding: "15px",
+    padding: "12px",
     borderRadius: "10px",
-    marginTop: "12px",
+    marginTop: "10px",
     cursor: "pointer",
     transition: "0.3s",
   },
@@ -141,21 +146,28 @@ const styles = {
   question: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     fontWeight: "bold",
+    fontSize: "14px",
+    gap: "10px",
   },
 
   answer: {
-    marginTop: "10px",
+    marginTop: "8px",
     color: "#ddd",
+    fontSize: "13px",
+    lineHeight: "1.5",
   },
 
   helpBtn: {
-    padding: "12px 18px",
+    padding: "10px 16px",
     background: "#2563eb",
     border: "none",
     borderRadius: "8px",
     color: "white",
     cursor: "pointer",
     fontWeight: "bold",
+    fontSize: "14px",
+    width: "100%",
   },
 };
