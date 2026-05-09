@@ -4,13 +4,13 @@ A smart travel planning platform with:
 - AI Trip Planning
 - Budget Estimator
 - Profile & Trip History
-- MySQL backend
+- SQLite backend
 
 ## Tech Stack
 - React
 - Firebase Auth
 - Node.js
-- MySQL
+- SQLite
 
 ## Setup
 
